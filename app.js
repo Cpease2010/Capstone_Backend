@@ -36,9 +36,10 @@ app.get('/content', (req,res) => {
         .then(Content => res.json({Content}))
 })
 
-app.get('/content/:topic', (req,res)=> {
-  Content.find({topic: req.params.topic},'topic subject points',function(err,result){console.log(err)})
-      .then(topic => res.status(201).json({topic}))
+//read **user specific**
+app.get('/content/:userID', (req,res)=> {
+  Users.find({_id: req.params.userID},function(err,result){console.log(err)})
+      .then(user => res.status(201).json({user}))
 })
 
 //create
