@@ -42,23 +42,35 @@ app.get('/content/:userID', (req,res)=> {
       .then(user => res.status(201).json({user}))
 })
 
-//create
+//create_user
 app.post('/content', (req, res) => {
   console.log(req.body)
     Users.create(req.body)
         .then(newContent => res.status(201).json({newContent}))
 })
 
-//update
+//update_user_fields
 app.put('/content/:id', (req, res) => {
     Users.update({_id: req.params.id}, { $set: req.body})
         .then(updatedContent => res.status(201).json({updatedContent}))
 })
 
-//delete
+//update_bills_field (add bill)
+app.put('/bills/:id', (req, res) => {
+    Users.updateOne({_id: req.params.id}, { $push: {"bills":req.body}})
+        .then(updatedContent => res.status(201).json({updatedContent}))
+})
+
+//delete_user
 app.delete('/content/:id', (req, res) => {
     Users.deleteOne({_id: req.params.id})
         .then(deletedContent => res.status(201).json({deletedContent}))
+})
+
+//delete_bill (single)
+app.delete('/bills/:user/:id', (req, res) => {
+    Users.updateOne({_id: req.params.user}, { $pull: {"bills":{_id : req.params.id}}})
+        .then(updatedContent => res.status(201).json({updatedContent}))
 })
 
 app.use((err,req,res,next)=>{
