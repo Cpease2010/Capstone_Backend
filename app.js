@@ -24,10 +24,11 @@ var childSchema = new mongoose.Schema({
     companyName: String, 
     billName: String,
     amountDue: Number,
-    dueDate: {type: Date, timestamp: false
-}});
+    dueDate: {type: Date, timestamp: false}
+});
 
 const userSchema = new mongoose.Schema({
+    user_ID: String,
     user_name: String,
     email: String,
     bills: [childSchema ]
@@ -39,65 +40,57 @@ const Users = mongoose.model('Users', userSchema)
 app.get('/user', (req, res) => {
     Users.find({}, function (err, result) {
             console.log(err)
-        })
-        .then(User => res.json({
-            User
-        }))
+    })
+    .then(User => res.json({ User }))
 })
 
 //read **user specific**
 app.get('/user/:userID', (req, res) => {
-    Users.find({
-            _id: req.params.userID
-        }, function (err, result) {
-            console.log(err)
-        })
-        .then(user => res.status(201).json({
-            user
-        }))
+    Users.find({ user_ID: req.params.userID }, function (err, result) {
+        console.log(err)
+    })
+    .then(user => res.status(201).json({ user }))
 })
 
 //read_single_bill
 app.get('/bills/:user/:id', (req,res) => {
     Users.findById(req.params.user, (err, user) => {
         let bill = user.bills.id(req.params.id)
-        res.status(201).json( { bill } )
+        res.status(201).json({ bill })
     })
 })
 
 //create_user
 app.post('/user', (req, res) => {
-    console.log(req.body)
-    Users.create(req.body)
-        .then(newUser => res.status(201).json({
-            newUser
-        }))
+    Users.create({
+        'user_ID': 'linkedin|tmfqKKofRb',
+        'user_name': 'Cory Pease',
+        'email': 'coryrpease@gmail.com',
+        'bills': [{
+        'companyName': 'First Company',
+        'billName': 'First Bill',
+        'amountDue': '111',
+        'dueDate': '01-01-1991'
+        }]
+    })
+    .then(newUser => res.status(201).json({ newUser }))
 })
 
 //update_user_fields
 app.put('/user/:id', (req, res) => {
-    Users.update({
-            _id: req.params.id
-        }, {
-            $set: req.body
-        })
-        .then(updatedUser => res.status(201).json({
-            updatedUser
-        }))
+    Users.update(
+        { _id: req.params.id },
+        { $set: req.body })
+    .then(updatedUser => res.status(201).json({ updatedUser }))
 })
 
 //add_bill
 app.put('/bills/add/:id', (req, res) => {
-    Users.updateOne({
-            _id: req.params.id
-        }, {
-            $push: {
-                "bills": req.body
-            }
-        })
-        .then(updatedContent => res.status(201).json({
-            updatedContent
-        }))
+    Users.updateOne(
+        { _id: req.params.id }, 
+        { $push: { "bills": req.body }}
+    )
+    .then(updatedContent => res.status(201).json({ updatedContent}))
 })
 
 
@@ -106,50 +99,30 @@ app.put('/bills/update/:user/:id', (req, res) => {
     Users.updateOne(
         { _id: req.params.user, "bills._id": req.params.id},
         { $set: req.body })
-    .then(updatedContent => res.status(201).json({
-        updatedContent
-    }))
+    .then(updatedContent => res.status(201).json({ updatedContent }))
     // "bills.$.companyName" format for req.body
 })
 
 //delete_user
 app.delete('/user/:id', (req, res) => {
-    Users.deleteOne({
-            _id: req.params.id
-        })
-        .then(deletedContent => res.status(201).json({
-            deletedContent
-        }))
+    Users.deleteOne({ _id: req.params.id })
+        .then(deletedContent => res.status(201).json({ deletedContent }))
 })
 
 //delete_bill (single)
 app.delete('/bills/:user/:id', (req, res) => {
-    Users.updateOne({
-            _id: req.params.user
-        }, {
-            $pull: {
-                "bills": {
-                    _id: req.params.id,
-                }
-            }
-        })
-        .then(updatedContent => res.status(201).json({
-            updatedContent
-        }))
+    Users.updateOne(
+        { _id: req.params.user },
+        { $pull: { "bills": { _id: req.params.id }}})
+    .then(updatedContent => res.status(201).json({ updatedContent }))
 })
 
 app.use((err, req, res, next) => {
-    res.status(err.status || 500).json({
-        error: err
-    })
+    res.status(err.status || 500).json({ error: err })
 })
 
 app.use((req, res, next) => {
-    res.status(404).json({
-        error: {
-            message: 'Not Found!'
-        }
-    })
+    res.status(404).json({ error: { message: 'Not Found!' }})
 })
 
 app.listen(port, listener)
