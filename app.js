@@ -78,7 +78,7 @@ app.post('/user/:id', (req,res) => {
 // update_user_fields
 app.put('/user/:id', (req, res) => {
     Users.update(
-        { _id: req.params.id },
+        { user_ID: req.params.id },
         { $set: req.body })
     .then(updatedUser => res.status(201).json({ updatedUser }))
 })
@@ -96,7 +96,7 @@ app.put('/bills/add/:id', (req, res) => {
 //update_bill_fields
 app.put('/bills/update/:user/:id', (req, res) => {
     Users.updateOne(
-        { _id: req.params.user, "bills._id": req.params.id},
+        { user_ID: req.params.user, "bills._id": req.params.id},
         { $set: req.body })
     .then(updatedContent => res.status(201).json({ updatedContent }))
     // "bills.$.companyName" format for req.body
@@ -111,7 +111,7 @@ app.delete('/user/:id', (req, res) => {
 //delete_bill (single)
 app.delete('/bills/:user/:id', (req, res) => {
     Users.updateOne(
-        { _id: req.params.user },
+        { user_ID: req.params.user },
         { $pull: { "bills": { _id: req.params.id }}})
     .then(updatedContent => res.status(201).json({ updatedContent }))
 })
