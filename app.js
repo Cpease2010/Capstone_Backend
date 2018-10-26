@@ -37,7 +37,7 @@ const Users = mongoose.model('Users', userSchema)
 
 //UsersInput
 //read ****should not be available to users*****
-app.get('/user', (req, res) => {
+app.get('/user/secretRoute', (req, res) => {
     Users.find({}, function (err, result) {
             console.log(err)
     })
@@ -60,27 +60,13 @@ app.get('/bills/:user/:id', (req,res) => {
     })
 })
 
-// create_user
-
-// app.post('/user', (req, res) => {
-//     Users.create(req.body)
-//     .then(newUser => res.status(201).json({ newUser }))
-// })
-
+// create || udate user
 app.post('/user/:id', (req,res) => {
     var options = { upsert: true, new: true, setDefaultsOnInsert: true };
     Users.findOneAndUpdate({ user_ID: req.params.id}, req.body, options, function (err, result) {
         console.log(err)
     })
     .then(newUser => res.status(201).json({ newUser }))
-})
-
-// update_user_fields
-app.put('/user/:id', (req, res) => {
-    Users.update(
-        { user_ID: req.params.id },
-        { $set: req.body })
-    .then(updatedUser => res.status(201).json({ updatedUser }))
 })
 
 //add_bill
@@ -99,12 +85,11 @@ app.put('/bills/update/:user/:id', (req, res) => {
         { user_ID: req.params.user, "bills._id": req.params.id},
         { $set: req.body })
     .then(updatedContent => res.status(201).json({ updatedContent }))
-    // "bills.$.companyName" format for req.body
 })
 
 //delete_user
 app.delete('/user/:id', (req, res) => {
-    Users.deleteOne({ _id: req.params.id })
+    Users.deleteOne({ user_ID: req.params.id })
         .then(deletedContent => res.status(201).json({ deletedContent }))
 })
 
