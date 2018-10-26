@@ -29,7 +29,7 @@ var childSchema = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema({
     user_ID: String,
-    user_name: {type: String, default: 'defaultName'},
+    user_name: String,
     email: String,
     bills: [childSchema ]
 })
