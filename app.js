@@ -29,7 +29,7 @@ var childSchema = new mongoose.Schema({
 
 const userSchema = new mongoose.Schema({
     user_ID: String,
-    user_name: String,
+    user_name: {type: String, default: 'defaultName'},
     email: String,
     bills: [childSchema ]
 })
@@ -60,23 +60,22 @@ app.get('/bills/:user/:id', (req,res) => {
     })
 })
 
-//create_user
-app.post('/user', (req, res) => {
-    Users.create({
-        'user_ID': 'linkedin|tmfqKKofRb',
-        'user_name': 'Cory Pease',
-        'email': 'coryrpease@gmail.com',
-        'bills': [{
-        'companyName': 'First Company',
-        'billName': 'First Bill',
-        'amountDue': '111',
-        'dueDate': '01-01-1991'
-        }]
+// create_user
+
+// app.post('/user', (req, res) => {
+//     Users.create(req.body)
+//     .then(newUser => res.status(201).json({ newUser }))
+// })
+
+app.post('/user/:id', (req,res) => {
+    var options = { upsert: true, new: true, setDefaultsOnInsert: true };
+    Users.findOneAndUpdate({ user_ID: req.params.id}, req.body, options, function (err, result) {
+        console.log(err)
     })
     .then(newUser => res.status(201).json({ newUser }))
 })
 
-//update_user_fields
+// update_user_fields
 app.put('/user/:id', (req, res) => {
     Users.update(
         { _id: req.params.id },
@@ -87,7 +86,7 @@ app.put('/user/:id', (req, res) => {
 //add_bill
 app.put('/bills/add/:id', (req, res) => {
     Users.updateOne(
-        { _id: req.params.id }, 
+        { user_ID: req.params.id }, 
         { $push: { "bills": req.body }}
     )
     .then(updatedContent => res.status(201).json({ updatedContent}))
