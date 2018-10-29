@@ -18,17 +18,17 @@ app.use(function (err, req, res, next) {
 
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true
-})
+});
 
 var childSchema = new mongoose.Schema({
-    companyName: String, 
-    billName: String,
-    amountDue: Number,
-    dueDate: {type: Date, timestamp: false}
+    companyName: {type: String, required: true}, 
+    billName: {type: String, required: true},
+    amountDue:{type: Number, required: true},
+    dueDate: {type: Number, required: true}
 });
 
 const userSchema = new mongoose.Schema({
-    user_ID: String,
+    user_ID: {type: String, required: true},
     user_name: String,
     email: String,
     bills: [childSchema ]
@@ -76,6 +76,7 @@ app.put('/bills/add/:id', (req, res) => {
         { $push: { "bills": req.body }}
     )
     .then(updatedContent => res.status(201).json({ updatedContent}))
+    
 })
 
 
