@@ -21,10 +21,10 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 var childSchema = new mongoose.Schema({
-    companyName: {type: String, required: true}, 
-    billName: {type: String, required: true},
-    amountDue:{type: Number, required: true},
-    dueDate: {type: Number, required: true}
+    companyName: String, 
+    billName: String,
+    amountDue:Number,
+    dueDate: Number
 });
 
 const userSchema = new mongoose.Schema({
